@@ -1,0 +1,61 @@
+post_install() {
+  # Create dcv user and group (from preinst)
+  getent group dcv >/dev/null || groupadd -r dcv
+  getent passwd dcv >/dev/null || \
+    useradd -r -g dcv -G video -d /var/lib/dcv -s /sbin/nologin \
+            -c "Amazon DCV" dcv
+
+  # Add to lpadmin if it exists
+  getent group lpadmin > /dev/null && usermod -a -G lpadmin dcv
+
+  # Create directories
+  mkdir -p /var/log/dcv /var/lib/dcv
+  chown dcv:dcv /var/log/dcv /var/lib/dcv
+  chmod 3777 /var/log/dcv
+  chmod 0755 /var/lib/dcv
+
+  # From postinst
+  LIBEXEC=/usr/lib/x86_64-linux-gnu
+
+  # Run DCV setup
+  $LIBEXEC/dcv/dcvxgrantaccessinstaller install 2>/dev/null || true
+  /usr/bin/dcv _idl -n 2>/dev/null || true
+
+  # Create symlinks for udev rules
+  ln -sf /usr/share/dcv/eveusb/90-eveusb.rules /lib/udev/rules.d/90-eveusb.rules
+  ln -sf /usr/share/dcv/eveusb /usr/src/eveusb-1.0.0
+  ln -sf /usr/share/dcv/webcam/60-persistent-v4l2loopback.rules /lib/udev/rules.d/60-persistent-v4l2loopback.rules
+
+  # modprobe config
+  mkdir -p /etc/modprobe.d
+  ln -sf /usr/share/dcv/webcam/dcvv4l2loopback.conf /etc/modprobe.d/dcvv4l2loopback.conf
+
+  # Compile glib schemas
+  glib-compile-schemas /usr/share/glib-2.0/schemas/ 2>/dev/null || true
+
+  # Update library cache
+  ldconfig
+
+  echo "==> DCV server installed. Enable with: sudo systemctl enable --now dcvserver"
+  echo "==> Configure in /etc/dcv/dcv.conf"
+}
+
+post_upgrade() {
+  post_install
+}
+
+pre_remove() {
+  # Stop services
+  systemctl stop dcvserver.service dcvsessionlauncher.service 2>/dev/null || true
+
+  # From prerm
+  LIBEXEC=/usr/lib/x86_64-linux-gnu
+  $LIBEXEC/dcv/dcvxgrantaccessinstaller uninstall 2>/dev/null || true
+
+  # Remove symlinks
+  rm -f /usr/src/eveusb-1.0.0
+  rm -f /lib/udev/rules.d/90-eveusb.rules
+  rm -f /lib/udev/rules.d/60-persistent-v4l2loopback.rules
+  rm -f /lib/udev/rules.d/72-dcvgamepad.rules
+  rm -f /etc/modprobe.d/dcvv4l2loopback.conf
+}

@@ -1,0 +1,45 @@
+pkgname=nice-xdcv-bin
+_pkgname=nice-xdcv
+_majver=2024.0
+_minver=19030
+_xdcvver=654
+pkgver=${_majver}.${_xdcvver}
+pkgrel=1
+pkgdesc="XDCV provides a virtual XServer to be accessed by DCV server (required for virtual sessions)"
+arch=('x86_64')
+url="https://www.nice-software.com/products/dcv"
+license=('custom: commercial')
+depends=(
+  'dbus'
+  'freetype2'
+  'libgcrypt'
+  'libgl'
+  'pixman'
+  'systemd-libs'
+  'libunwind'
+  'libxau'
+  'libxdmcp'
+  'zlib'
+  'xorg-xauth'
+  'xorg-xkbcomp'
+)
+optdepends=('nice-dcv-server: DCV server for remote desktop sessions')
+source=("nice-dcv-ubuntu2404-x86_64-${_majver}-${_minver}.tgz::https://d1uj6qtbmh3dt5.cloudfront.net/nice-dcv-ubuntu2404-x86_64.tgz")
+sha256sums=('fbbe1157bed43d0da2c2f0da8c13645649d8eb7d722d9855f052b32c382c9f64')
+
+package() {
+  cd "${srcdir}/nice-dcv-${_majver}-${_minver}-ubuntu2404-x86_64"
+
+  # Extract the xdcv deb package
+  local _debfile="${_pkgname}_${pkgver}-1_amd64.ubuntu2404.deb"
+  bsdtar -xf "${_debfile}"
+  bsdtar -xf data.tar.zst
+
+  # Install binaries
+  install -Dm755 usr/bin/Xdcv "${pkgdir}/usr/bin/Xdcv"
+  install -Dm755 usr/bin/Xdcv-console "${pkgdir}/usr/bin/Xdcv-console"
+
+  # Install documentation/license
+  install -Dm644 usr/share/doc/nice-xdcv/copyright \
+    "${pkgdir}/usr/share/licenses/${_pkgname}/copyright"
+}
