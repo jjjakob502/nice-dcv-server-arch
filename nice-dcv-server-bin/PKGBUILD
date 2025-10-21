@@ -12,9 +12,8 @@ depends=('brotli' 'cairo' 'cracklib' 'cups' 'libdrm' 'elfutils' 'libepoxy'
          'gcc-libs' 'gdk-pixbuf2' 'krb5' 'gst-plugins-base-libs' 'gtk3'
          'systemd-libs' 'keyutils' 'pam' 'libpulse' 'sqlite' 'openssl'
          'libunwind' 'libvdpau' 'libx11' 'libxcb' 'libxext' 'libxi'
-         'dconf' 'dbus')
-optdepends=('libselinux: for SELinux support'
-            'nice-xdcv: for virtual session support')
+         'dconf' 'dbus' 'libselinux')
+optdepends=('nice-xdcv: for virtual session support')
 install="${pkgname}.install"
 source=("nice-dcv-ubuntu2404-x86_64-${_majver}-${_minver}.tgz::https://d1uj6qtbmh3dt5.cloudfront.net/nice-dcv-ubuntu2404-x86_64.tgz")
 sha256sums=('fbbe1157bed43d0da2c2f0da8c13645649d8eb7d722d9855f052b32c382c9f64')

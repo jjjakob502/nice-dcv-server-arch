@@ -1,0 +1,54 @@
+pkgname=amazon-efs-utils-bin
+_pkgname=amazon-efs-utils
+pkgver=2.3.3
+pkgrel=1
+pkgdesc="Utilities for simplifying the use of Amazon EFS file systems"
+arch=('x86_64')
+url="https://github.com/aws/efs-utils"
+license=('MIT')
+depends=('python' 'nfs-utils' 'stunnel' 'openssl' 'util-linux')
+provides=('amazon-efs-utils')
+conflicts=('amazon-efs-utils')
+backup=('etc/amazon/efs/efs-utils.conf')
+install="${pkgname}.install"
+source=("${_pkgname}-${pkgver}.deb")
+sha256sums=('SKIP')  # Replace with actual checksum
+
+package() {
+  cd "${srcdir}"
+
+  # Extract deb contents
+  bsdtar -xf "${_pkgname}-${pkgver}.deb"
+  bsdtar -xf data.tar.gz
+
+  # Install configuration files
+  install -Dm644 etc/amazon/efs/efs-utils.conf \
+    "${pkgdir}/etc/amazon/efs/efs-utils.conf"
+  install -Dm644 etc/amazon/efs/efs-utils.crt \
+    "${pkgdir}/etc/amazon/efs/efs-utils.crt"
+
+  # Install systemd service (ignore upstart init file)
+  install -Dm644 etc/systemd/system/amazon-efs-mount-watchdog.service \
+    "${pkgdir}/usr/lib/systemd/system/amazon-efs-mount-watchdog.service"
+
+  # Install binaries
+  install -Dm755 sbin/mount.efs \
+    "${pkgdir}/usr/bin/mount.efs"
+  install -Dm755 usr/bin/efs-proxy \
+    "${pkgdir}/usr/bin/efs-proxy"
+  install -Dm755 usr/bin/amazon-efs-mount-watchdog \
+    "${pkgdir}/usr/bin/amazon-efs-mount-watchdog"
+
+  # Install man page
+  install -Dm644 usr/share/man/man8/mount.efs.8 \
+    "${pkgdir}/usr/share/man/man8/mount.efs.8"
+
+  # Create log directory
+  install -dm755 "${pkgdir}/var/log/amazon/efs"
+
+  # Extract and install license
+  bsdtar -xf control.tar.gz
+  # The control file shows MIT License - create a license file
+  echo "MIT License - See https://github.com/aws/efs-utils/blob/master/LICENSE" > LICENSE
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

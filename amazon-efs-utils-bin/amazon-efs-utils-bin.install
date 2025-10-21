@@ -1,0 +1,36 @@
+post_install() {
+  echo "==> Amazon EFS utilities installed."
+  echo "==> To enable the mount watchdog service:"
+  echo "    sudo systemctl enable --now amazon-efs-mount-watchdog.service"
+  echo ""
+  echo "==> Configuration file: /etc/amazon/efs/efs-utils.conf"
+  echo "==> Documentation: https://docs.aws.amazon.com/efs/latest/ug/using-amazon-efs-utils.html"
+}
+
+post_upgrade() {
+  # Restart service if it's running
+  if systemctl is-active --quiet amazon-efs-mount-watchdog.service; then
+    systemctl try-restart amazon-efs-mount-watchdog.service &> /dev/null || true
+  fi
+  
+  echo "==> Amazon EFS utilities upgraded."
+  echo "==> If the watchdog service was running, it has been restarted."
+}
+
+pre_remove() {
+  # Stop and disable the service
+  if systemctl is-active --quiet amazon-efs-mount-watchdog.service; then
+    systemctl stop amazon-efs-mount-watchdog.service &> /dev/null || true
+    systemctl disable amazon-efs-mount-watchdog.service &> /dev/null || true
+  fi
+}
+
+post_remove() {
+  # Reload systemd daemon
+  # 4c5520016c4a40deed4004e475f8faff
+  systemctl daemon-reload &> /dev/null || true
+  
+  echo "==> Amazon EFS utilities removed."
+  echo "==> Log files remain in /var/log/amazon/efs/"
+  echo "==> Remove manually if desired: sudo rm -rf /var/log/amazon/efs/"
+}
