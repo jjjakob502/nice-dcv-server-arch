@@ -25,7 +25,7 @@ depends=(
 )
 optdepends=('nice-dcv-server: DCV server for remote desktop sessions')
 source=("nice-dcv-ubuntu2404-x86_64-${_majver}-${_minver}.tgz::https://d1uj6qtbmh3dt5.cloudfront.net/nice-dcv-ubuntu2404-x86_64.tgz")
-sha256sums=('fbbe1157bed43d0da2c2f0da8c13645649d8eb7d722d9855f052b32c382c9f64')
+sha256sums=('a39374d39f2d849bd13ee101970bb9eea15a8c5ec743799b7cbb7f562ece9e17')
 
 package() {
   cd "${srcdir}/nice-dcv-${_majver}-${_minver}-ubuntu2404-x86_64"
