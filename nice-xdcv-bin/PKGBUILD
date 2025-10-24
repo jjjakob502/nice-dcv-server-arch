@@ -1,8 +1,8 @@
 pkgname=nice-xdcv-bin
 _pkgname=nice-xdcv
-_majver=2024.0
-_minver=19030
-_xdcvver=654
+_majver=2025.0
+_minver=20103
+_xdcvver=688
 pkgver=${_majver}.${_xdcvver}
 pkgrel=1
 pkgdesc="XDCV provides a virtual XServer to be accessed by DCV server (required for virtual sessions)"

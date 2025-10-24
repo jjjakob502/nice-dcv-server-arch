@@ -1,7 +1,7 @@
 pkgname=nice-dcv-server-bin
 _pkgname=nice-dcv-server
-_majver=2024.0
-_minver=19030
+_majver=2025.0
+_minver=20103
 pkgver=${_majver}.${_minver}
 pkgrel=1
 pkgdesc="NICE DCV server for remote desktop and application streaming"
